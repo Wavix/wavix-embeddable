@@ -444,7 +444,7 @@ If successful, Wavix returns the **HTTP 200** status code. The response body con
     "uuid": "Unique token ID",
     "sip_trunk": "SIP trunk ID",
     "payload": {},
-    "ttl": number
+    "ttl": "WIDGET_ACTIVITY_TIME"
   }
 ]
 ```
@@ -471,7 +471,7 @@ If successful, Wavix returns the **HTTP 200** status code. The response body con
   "uuid": "Unique token ID",
   "sip_trunk": "SIP trunk ID",
   "payload": {},
-  "ttl": number
+  "ttl": "WIDGET_ACTIVITY_TIME"
 }
 ```
 
