@@ -1,0 +1,73 @@
+.webrtc-widget-copy {
+  --copy-min-width: 220px;
+  --copy-height: 48px;
+  --button-size: 16px;
+
+  position: relative;
+  width: 100%;
+  min-width: var(--copy-min-width);
+  height: var(--copy-height);
+
+  &__input {
+    width: 100%;
+    height: 100%;
+    padding: 18px 34px 4px 12px;
+    font: var(--font-14-lh24-w400);
+    text-overflow: ellipsis;
+    border-radius: var(--border-radius-2);
+    border: 1px solid var(--bg-border);
+    color: var(--text-high-contrast);
+    background-color: var(--bg-background);
+  }
+
+  &__button:hover + &__input,
+  &__input:hover {
+    background-color: var(--bg-hover);
+  }
+
+  &__button:active + &__input,
+  &__input:active {
+    background-color: var(--bg-pressed);
+  }
+
+  &__label {
+    position: absolute;
+    pointer-events: none;
+    width: fit-content;
+    font: var(--font-13-lh18-w400);
+    color: var(--text-medium-contrast);
+    transform: translate3d(12px, 15px, 0);
+
+    &--transition {
+      will-change: font, transform;
+      transition-property: font, transform;
+      transition-duration: 0.3s;
+      transition-timing-function: var(--cubic-bezier-1);
+    }
+
+    &--filled {
+      font: var(--font-12-lh12-w400);
+      transform: translate3d(12px, 8px, 0);
+    }
+  }
+
+  &__button {
+    position: absolute;
+    right: 0;
+    width: var(--button-size);
+    transform: translate3d(-12px, 15px, 0);
+    cursor: pointer;
+
+    & > svg > path {
+      fill: var(--fg-high-contrast);
+    }
+
+    &--copied {
+      cursor: auto;
+    }
+
+    &--copied > svg > path {
+      fill: var(--fg-accent);
+    }
+  }
+}

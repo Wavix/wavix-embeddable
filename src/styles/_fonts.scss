@@ -1,0 +1,28 @@
+#demo-app,
+#webrtc-widget {
+  --font-family-main: "Helvetica Neue", Arial, sans-serif;
+  // font weights
+  --font-weight-400: 400;
+  --font-weight-500: 500;
+  // font sizes
+  --font-24-lh32-w500: var(--font-weight-500) 24px / 32px var(--font-family-main);
+  --font-24-lh32-w400: var(--font-weight-400) 24px / 32px var(--font-family-main);
+  //
+  --font-16-lh24-w500: var(--font-weight-500) 16px / 24px var(--font-family-main);
+  //
+  --font-14-lh24-w500: var(--font-weight-500) 14px / 24px var(--font-family-main);
+  --font-14-lh20-w500: var(--font-weight-500) 14px / 20px var(--font-family-main);
+  --font-14-lh24-w400: var(--font-weight-400) 14px / 24px var(--font-family-main);
+  //
+  --font-13-lh18-w400: var(--font-weight-400) 13px / 18px var(--font-family-main);
+  --font-12-lh12-w400: var(--font-weight-400) 12px / 12px var(--font-family-main);
+  --font-11-lh16-w400: var(--font-weight-400) 11px / 16px var(--font-family-main);
+  //
+  --font-8-lh16-w400: var(--font-weight-500) 8px / 16px var(--font-family-main);
+  //
+  font: var(--font-14-lh24-w400);
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

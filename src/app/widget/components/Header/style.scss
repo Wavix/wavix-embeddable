@@ -1,0 +1,46 @@
+.webrtc-widget-header {
+  --logo-height: 16px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--header-height);
+  min-height: var(--header-height);
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--bg-border);
+  background-color: var(--bg-background);
+
+  &__back_button {
+    position: absolute;
+    top: 10px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    transform: rotate3d(0, 1, 0, 180deg);
+    cursor: pointer;
+    display: none;
+
+    & > svg > path {
+      fill: var(--a-high-contrast);
+    }
+
+    &--show {
+      display: block;
+    }
+  }
+
+  & > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__logo {
+    width: auto;
+    height: var(--logo-height);
+    max-height: var(--logo-height);
+    object-fit: contain;
+  }
+}

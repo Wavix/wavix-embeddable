@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <title>Wavix webRTC</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <script type="module" src="/src/widget.tsx"></script>
+    <script>
+      ;(() => {
+        const initWidget = () => {
+          const target = document.getElementById("webrtc-widget")
+
+          if (!target) return
+
+          try {
+            const configToken = new URLSearchParams(window.location.search).get("config_token")
+
+            if (!configToken) {
+              target.innerHTML = "Config token is required"
+              return
+            }
+
+            const decryptedConfigToken = atob(configToken)
+            const config = JSON.parse(decryptedConfigToken)
+
+            wavixWebRTC.init({
+              widget: { ...config.widget, containerId: "webrtc-widget" },
+              sip: { ...config.sip },
+              inner: { isWindow: true }
+            })
+          } catch (e) {
+            target.innerHTML = "Error: " + e.message
+            return
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initWidget)
+        } else {
+          initWidget()
+        }
+      })()
+    </script>
+
+    <div id="webrtc-widget"></div>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+.webrtc-widget-call-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+
+  &__status {
+    font: var(--font-14-lh24-w400);
+    color: var(--text-medium-contrast);
+  }
+
+  &__number {
+    max-width: calc(var(--widget-width) - var(--spacing-16) * 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-8);
+
+    & > svg {
+      flex-shrink: 0;
+
+      & > path {
+        fill: var(--fg-high-contrast);
+      }
+    }
+
+    & > span {
+      font: var(--font-24-lh32-w500);
+      color: var(--text-high-contrast);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+}

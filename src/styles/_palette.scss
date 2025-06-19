@@ -1,0 +1,54 @@
+#demo-app,
+#webrtc-widget {
+  // text
+  --text-high-contrast: #333842;
+  --text-medium-contrast: #667085;
+  --text-low-contrast: #98a2b3;
+  --text-accent: #22aa5c;
+  --text-inverted: #fff;
+  --text-negative: #ff5655;
+  // background
+  --bg-background: #fff;
+  --bg-header: #fff;
+  --bg-navigation: #fff;
+  --bg-status: #f9fafb;
+  --bg-brand: #f0f9fc;
+  --bg-border: #eaecf0;
+  //foreground
+  --fg-high-contrast: #667085;
+  --fg-accent: #22aa5c;
+  --fg-negative: #ff5655;
+  --fg-warning: #e7b006;
+  --fg-brand: #34c1ca;
+  --fg-inverted: #fff;
+  --fg-logo: #142737;
+  // actions
+  --a-high-contrast: #333842;
+  --a-active: #22aa5c;
+  --a-inactive: #98a2b3;
+  // text states
+  --text-inverted-disabled: #fff;
+  // background states
+  --bg-hover: #f9fafb;
+  --bg-pressed: #f2f4f7;
+  --bg-border-active: #22aa5c;
+  // foreground states
+  --fg-accent-hover: #289c5c;
+  --fg-accent-pressed: #2c7351;
+  --fg-accent-disabled: #e7f7ef;
+  --fg-negative-hover: #e52625;
+  --fg-negative-pressed: #b61f1e;
+  --fg-negative-disabled: #fcf1f1;
+  --fg-high-contrast-hover: #333842;
+  --fg-high-contrast-pressed: #333842;
+  --fg-high-contrast-disabled: #eaecf0;
+  --fg-inverted-disabled: #fff;
+  // actions states
+  --a-hover: #667085;
+  --a-pressed: #333842;
+  --a-disabled: #eaecf0;
+  // components
+  --switch-background: #333842;
+  --switch-background-checked: #22aa5c;
+  --switch-foreground: #fff;
+}

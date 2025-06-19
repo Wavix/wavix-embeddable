@@ -1,0 +1,35 @@
+.webrtc-widget-loader {
+  --loader-width: 44px;
+  --dot-size: 12px;
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  width: var(--loader-width);
+
+  & > div {
+    width: var(--dot-size);
+    height: var(--dot-size);
+    border-radius: calc(var(--dot-size) / 2);
+    background-color: var(--fg-accent);
+    animation: fade 0.8s ease-in-out alternate infinite;
+  }
+
+  & > div:nth-of-type(1) {
+    animation-delay: -0.4s;
+  }
+
+  & > div:nth-of-type(2) {
+    animation-delay: -0.2s;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

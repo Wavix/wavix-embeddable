@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "target": "ESNext",
+
+    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+
+    "paths": {
+      "react": ["./node_modules/preact/compat/"],
+      "@demo/*": ["./src/app/demo/*"],
+      "@widget/*": ["./src/app/widget/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@components/*": ["./src/components/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@interfaces/*": ["./src/interfaces/*"]
+    },
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+
+    "strict": true
+  },
+  "include": ["src", "typings.d.ts", ".eslintrc.cjs", "lint-staged.config.cjs"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

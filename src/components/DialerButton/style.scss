@@ -1,0 +1,51 @@
+.webrtc-widget-dialer-button {
+  --dial-btn-width: 64px;
+  --dial-btn-height: 48px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--dial-btn-width);
+  height: var(--dial-btn-height);
+  border-radius: var(--border-radius-2);
+  background-color: var(--bg-background);
+  cursor: pointer;
+
+  &--pressed {
+    background-color: var(--bg-pressed) !important;
+  }
+
+  &:hover {
+    background-color: var(--bg-hover);
+  }
+
+  &--with-subtitle {
+    justify-content: flex-start;
+  }
+
+  &--transition {
+    will-change: color, background-color;
+    transition-property: color, background-color;
+    transition-duration: 0.3s;
+    transition-timing-function: var(--cubic-bezier-1);
+  }
+
+  &__text {
+    color: var(--text-high-contrast);
+    font: var(--font-24-lh32-w400);
+
+    & > svg > path {
+      fill: var(--text-high-contrast);
+    }
+  }
+
+  &__subtext {
+    color: var(--text-medium-contrast);
+    font: var(--font-8-lh16-w400);
+
+    & > svg > path {
+      fill: var(--text-medium-contrast);
+    }
+  }
+}

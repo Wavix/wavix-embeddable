@@ -1,0 +1,10 @@
+.DS_Store
+.vscode/*
+.idea
+*.sw?
+
+node_modules
+build
+
+.env
+.husky/_/

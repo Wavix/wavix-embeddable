@@ -1,0 +1,62 @@
+.webrtc-widget-input {
+  --input-height: 40px;
+  --input-min-width: 220px;
+  --backspace-size: 24px;
+
+  position: relative;
+  width: 100%;
+  min-width: var(--input-min-width);
+  height: var(--input-height);
+  background-color: transparent;
+
+  &__input {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: var(--spacing-4) var(--spacing-24);
+    z-index: var(--input-input-z-index);
+    font: var(--font-24-lh32-w500);
+    text-align: center;
+    color: var(--text-high-contrast);
+    caret-color: var(--fg-high-contrast);
+    background-color: transparent;
+  }
+
+  &__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    z-index: var(--input-label-z-index);
+    pointer-events: none;
+    font: var(--font-13-lh18-w400);
+    color: var(--text-low-contrast);
+
+    &--filled {
+      opacity: 0;
+    }
+  }
+
+  &__backspace {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate3d(0px, -50%, 0);
+    z-index: var(--input-backspace-z-index);
+    width: var(--backspace-size);
+    height: var(--backspace-size);
+    opacity: 0;
+    user-select: none;
+    pointer-events: none;
+
+    & > svg > path {
+      fill: var(--fg-high-contrast);
+    }
+
+    &--filled {
+      opacity: 1;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+  }
+}

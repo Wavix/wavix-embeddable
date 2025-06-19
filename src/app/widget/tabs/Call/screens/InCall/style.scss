@@ -1,0 +1,17 @@
+.webrtc-widget-in-call {
+  height: 100%;
+  padding: var(--spacing-32) 0 var(--spacing-24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  &__button-content {
+    width: 28px;
+    height: 28px;
+
+    & > svg > path {
+      fill: var(--text-inverted);
+    }
+  }
+}

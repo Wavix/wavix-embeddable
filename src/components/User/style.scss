@@ -1,0 +1,54 @@
+.webrtc-widget-user {
+  --user-size: 64px;
+
+  position: relative;
+  width: var(--user-size);
+  height: var(--user-size);
+
+  &__icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    z-index: var(--user-icon-z-index);
+    border-radius: calc(var(--user-size) / 2);
+    background-color: var(--bg-brand);
+
+    & > svg > path {
+      fill: var(--fg-brand);
+    }
+  }
+
+  &__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    width: calc(var(--user-size) - 1px);
+    height: calc(var(--user-size) - 1px);
+    z-index: var(--user-ring-z-index);
+    border-radius: calc(var(--user-size) / 2);
+    background-color: var(--fg-brand);
+  }
+
+  &--animation &__ring {
+    will-change: transform;
+    animation: ring-pulse 0.6s var(--cubic-bezier-1) infinite;
+  }
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-50%, -50%, 0) scale(1.07);
+  }
+
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+}

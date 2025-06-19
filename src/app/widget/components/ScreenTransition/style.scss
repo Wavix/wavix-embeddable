@@ -1,0 +1,12 @@
+.webrtc-widget-screen-transition {
+  opacity: 1;
+  will-change: opacity;
+  transition-property: opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.46, 0.03, 0.52, 0.96);
+
+  &--active {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

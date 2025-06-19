@@ -1,0 +1,38 @@
+.webrtc-widget-tabs {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__tab {
+    position: relative;
+    cursor: pointer;
+    padding: 0 var(--spacing-8) var(--spacing-8);
+    font: var(--font-13-lh18-w400);
+    color: var(--text-medium-contrast);
+
+    &--active {
+      z-index: var(--tabs-active-tab-z-index);
+      color: var(--text-accent);
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--bg-border-active);
+      }
+    }
+  }
+
+  &__divider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--bg-border);
+  }
+}

@@ -1,0 +1,117 @@
+.demo-app {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  width: 100vw;
+  min-height: 100vh;
+  padding: var(--spacing-24);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-16);
+  }
+
+  &__title {
+    font: var(--font-24-lh32-w500);
+  }
+
+  &__version {
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius-2);
+    background-color: var(--fg-brand);
+    color: var(--fg-inverted);
+    font: var(--font-12-lh12-w400);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+
+    & > h3 {
+      font: var(--font-16-lh24-w500);
+    }
+  }
+
+  &__inputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: var(--spacing-16);
+    grid-row-gap: var(--spacing-16);
+
+    .webrtc-widget-input {
+      height: 48px;
+      border: 1px solid var(--bg-border);
+      border-radius: var(--border-radius-2);
+
+      &__input {
+        padding: var(--spacing-4) 12px;
+        text-align: left;
+        font: var(--font-14-lh24-w400);
+      }
+
+      &__label {
+        left: 0;
+        transform: translate3d(12px, -50%, 0);
+      }
+
+      &__backspace--filled {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &__input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    & > p {
+      padding: 0 12px;
+      font: var(--font-13-lh18-w400);
+      color: var(--text-low-contrast);
+    }
+  }
+
+  &__checkboxes {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-16);
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__tabs {
+    .webrtc-widget-tabs {
+      justify-content: center;
+    }
+  }
+
+  &__syntax {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__links {
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+
+    a {
+      color: var(--text-accent);
+    }
+
+    &--visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+}

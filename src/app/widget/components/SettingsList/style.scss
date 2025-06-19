@@ -1,0 +1,47 @@
+.webrtc-widget-settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-8) 12px;
+    border-radius: var(--border-radius-2);
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background-color: var(--bg-hover);
+    }
+
+    &:active {
+      background-color: var(--bg-pressed);
+    }
+
+    & > div {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      & > svg {
+        width: 16px;
+        height: 16px;
+
+        & > path {
+          fill: var(--fg-high-contrast);
+        }
+      }
+
+      & > span {
+        font: var(--font-14-lh24-w400);
+        color: var(--text-high-contrast);
+      }
+    }
+
+    & > svg > path {
+      fill: var(--fg-high-contrast);
+    }
+  }
+}

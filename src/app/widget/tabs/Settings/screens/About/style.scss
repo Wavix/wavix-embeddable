@@ -1,0 +1,51 @@
+.webrtc-widget-about-settings {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 var(--spacing-8);
+
+  &__back_button {
+    position: absolute;
+    top: 8px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    transform: rotate3d(0, 1, 0, 180deg);
+    cursor: pointer;
+
+    & > svg > path {
+      fill: var(--a-high-contrast);
+    }
+
+    &--with-logo {
+      display: none;
+    }
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0;
+    font: var(--font-11-lh16-w400);
+    color: var(--text-high-contrast);
+  }
+
+  &__description {
+    font: var(--font-11-lh16-w400);
+    color: var(--text-medium-contrast);
+  }
+
+  .webrtc-widget-copy {
+    margin-top: var(--spacing-16);
+  }
+
+  &__version {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    font: var(--font-11-lh16-w400);
+    color: var(--text-low-contrast);
+  }
+}

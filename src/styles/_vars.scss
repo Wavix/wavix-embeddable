@@ -1,0 +1,32 @@
+#demo-app,
+#webrtc-widget {
+  // main
+  --widget-width: 288px;
+  --widget-height: 504px;
+  --widget-height-no-logo: 460px;
+  --header-height: 44px;
+  --tab-bar-height: 40px;
+  --spacing-tab-bar: calc(var(--tab-bar-height) + var(--spacing-8));
+  // z-indexes
+  --widget-z-index: 9999;
+  --input-label-z-index: 1;
+  --input-input-z-index: 2;
+  --input-backspace-z-index: 3;
+  --select-dropdown-z-index: 4;
+  --tabs-active-tab-z-index: 1;
+  --user-icon-z-index: 2;
+  --user-ring-z-index: 1;
+  // border radiuses
+  --border-radius-2: 2px;
+  --border-radius-8: 8px;
+  // spacings
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  // shadows
+  --box-shadow-1: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  // timing functions
+  --cubic-bezier-1: cubic-bezier(0.46, 0.03, 0.52, 0.96);
+}

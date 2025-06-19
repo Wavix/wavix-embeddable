@@ -1,0 +1,108 @@
+.webrtc-widget-switch {
+  --switch-height: 24px;
+  --switch-width: 56px;
+  --slider-height: 22px;
+  --slider-width: 27px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__container {
+    position: relative;
+    display: flex;
+    height: var(--switch-height);
+    width: var(--switch-width);
+    background-color: var(--switch-background);
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+
+    &::before {
+      content: "ON";
+      position: absolute;
+      top: 50%;
+      left: 25%;
+      color: var(--text-inverted);
+      font:
+        500 8px / 10px "Helvetica Neue",
+        Arial,
+        sans-serif;
+      transform: translate3d(-50%, -50%, 0);
+    }
+
+    &::after {
+      content: "OFF";
+      position: absolute;
+      top: 50%;
+      left: 75%;
+      color: var(--text-inverted);
+      font:
+        500 8px / 10px "Helvetica Neue",
+        Arial,
+        sans-serif;
+      transform: translate3d(-50%, -50%, 0);
+    }
+
+    &--checked {
+      background-color: var(--switch-background-checked);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--transition {
+      will-change: background-color;
+      transition-property: background-color;
+      transition-duration: 0.1s;
+      transition-timing-function: linear;
+    }
+  }
+
+  &__input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  &__slider {
+    position: absolute;
+    width: var(--slider-width);
+    height: var(--slider-height);
+    background-color: var(--switch-foreground);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    transform: translate3d(1px, 1px, 0);
+
+    &--checked {
+      border-top-left-radius: 0;
+      border-top-right-radius: 2px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 2px;
+      transform: translate3d(calc(1px + var(--slider-width)), 1px, 0);
+    }
+
+    &--transition {
+      will-change: transform;
+      transition-property: transform;
+      transition-duration: 0.1s;
+      transition-timing-function: linear;
+    }
+  }
+
+  &__label {
+    font:
+      400 13px / 18px "Helvetica Neue",
+      Arial,
+      sans-serif;
+    color: #333842;
+    user-select: none;
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
