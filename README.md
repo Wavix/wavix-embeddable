@@ -520,3 +520,12 @@ If successful, Wavix returns the **HTTP 200** status code. The response body wil
   "success": true
 }
 ```
+
+### Support and Contact
+If you have questions or run into issues with the widget, open an issue.
+For direct support, contact support@wavix.com.
+
+Open an issue should be a link to https://github.com/Wavix/wavix-embeddable/issues
+
+### License
+This widget is distributed under the MIT License. See [LICENSE](https://github.com/Wavix/wavix-embeddable/blob/main/LICENSE) for more detailed information.
