@@ -2,6 +2,7 @@
   "name": "wavix-embeddable",
   "repository": "git@github.com:wavix/wavix-embeddable.git",
   "author": "Wavix Inc. <product@wavix.com>",
+  "license": "MIT",
   "version": "2.0.0",
   "type": "module",
   "scripts": {
