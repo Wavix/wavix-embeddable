@@ -225,7 +225,7 @@ Paste the following JSON into the request body:
 {
   "sip_trunk": "YOUR_SIP_TRUNK",
   "payload": {},
-  "ttl": "WIDGET_ACTIVITY_TIME"
+  "ttl": WIDGET_ACTIVITY_TIME
 }
 ```
 
@@ -245,7 +245,7 @@ If successful, Wavix returns the **HTTP 201 Created** status code. The response 
   "uuid": "TOKEN_ID",
   "sip_trunk": "SIP trunk ID",
   "payload": {},
-  "ttl": "WIDGET_ACTIVITY_TIME"
+  "ttl": WIDGET_ACTIVITY_TIME
 }
 ```
 
@@ -393,7 +393,7 @@ Paste the following JSON into the request body:
 {
   "sip_trunk": "SIP_TRUNK_ID",
   "payload": {},
-  "ttl": "WIDGET_ACTIVITY_TIME"
+  "ttl": WIDGET_ACTIVITY_TIME
 }
 ```
 
@@ -412,7 +412,7 @@ If successful, Wavix returns the **HTTP 201 Created** status code. The response 
   "uuid": "TOKEN_ID",
   "sip_trunk": "SIP trunk ID",
   "payload": {},
-  "ttl": "WIDGET_ACTIVITY_TIME"
+  "ttl": WIDGET_ACTIVITY_TIME
 }
 ```
 
@@ -444,7 +444,7 @@ If successful, Wavix returns the **HTTP 200** status code. The response body con
     "uuid": "Unique token ID",
     "sip_trunk": "SIP trunk ID",
     "payload": {},
-    "ttl": "WIDGET_ACTIVITY_TIME"
+    "ttl": WIDGET_ACTIVITY_TIME
   }
 ]
 ```
@@ -471,7 +471,7 @@ If successful, Wavix returns the **HTTP 200** status code. The response body con
   "uuid": "Unique token ID",
   "sip_trunk": "SIP trunk ID",
   "payload": {},
-  "ttl": "WIDGET_ACTIVITY_TIME"
+  "ttl": WIDGET_ACTIVITY_TIME
 }
 ```
 
