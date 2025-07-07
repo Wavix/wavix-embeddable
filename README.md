@@ -221,7 +221,7 @@ https://api.wavix.com/v2/webrtc/tokens?appid=API_KEY
 
 Paste the following JSON into the request body:
 
-```json
+```javascript
 {
   "sip_trunk": "YOUR_SIP_TRUNK",
   "payload": {},
@@ -239,7 +239,7 @@ You can associate a payload with the widget – a JSON object with arbitrary dat
 
 If successful, Wavix returns the **HTTP 201 Created** status code. The response body will contain the following details:
 
-```json
+```javascript
 {
   "token": "WIDGET_TOKEN",
   "uuid": "TOKEN_ID",
@@ -389,7 +389,7 @@ https://api.wavix.com/v2/webrtc/tokens?appid=your_api_key
 
 Paste the following JSON into the request body:
 
-```json
+```javascript
 {
   "sip_trunk": "SIP_TRUNK_ID",
   "payload": {},
@@ -406,7 +406,7 @@ Where:
 
 If successful, Wavix returns the **HTTP 201 Created** status code. The response body will contain the following details:
 
-```json
+```javascript
 {
   "token": "WIDGET_TOKEN",
   "uuid": "TOKEN_ID",
@@ -438,7 +438,7 @@ Where:
 
 If successful, Wavix returns the **HTTP 200** status code. The response body contains a list of active authentication tokens:
 
-```json
+```javascript
 [
   {
     "uuid": "Unique token ID",
@@ -466,7 +466,7 @@ Where:
 
 If successful, Wavix returns the **HTTP 200** status code. The response body contains the authentication token:
 
-```json
+```javascript
 {
   "uuid": "Unique token ID",
   "sip_trunk": "SIP trunk ID",
@@ -490,7 +490,7 @@ Where:
 
 Paste the following JSON into the request body:
 
-```json
+```javascript
 {
   "payload": {}
 }
@@ -515,7 +515,7 @@ Where:
 
 If successful, Wavix returns the **HTTP 200** status code. The response body will indicate a successful request:
 
-```json
+```javascript
 {
   "success": true
 }
