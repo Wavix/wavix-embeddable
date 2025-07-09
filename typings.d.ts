@@ -3,6 +3,7 @@
 type ImportMetaEnv = {
   readonly VITE_CONTROLLER_URI: string
   readonly VITE_WIDGET_URI: string
+  readonly VITE_SIP_SERVER: string
 }
 
 type ImportMeta = {

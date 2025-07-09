@@ -3,6 +3,12 @@ import { getWidgetPath } from "@helpers/shared"
 import type { DemoFormData, DemoTab } from "@interfaces/demo"
 
 export const getHosts = () => {
+  const sipServer = import.meta.env.VITE_SIP_SERVER
+
+  if (sipServer) {
+    return [{ value: sipServer, label: sipServer }]
+  }
+
   return [
     { value: "au.wavix.net", label: "au.wavix.net" },
     { value: "sg.wavix.net", label: "sg.wavix.net" },
