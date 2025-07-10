@@ -129,7 +129,7 @@ export const injectBaseStyles = async () => {
   newStyles.setAttribute("data-base-styles", "true")
 
   newStyles.rel = "stylesheet"
-  newStyles.href = `${getWidgetPath()}/style.css`
+  newStyles.href = `${getWidgetPath()}/style_v${import.meta.env.PACKAGE_VERSION}.css`
 
   document.head.appendChild(newStyles)
 
