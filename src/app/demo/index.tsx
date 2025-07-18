@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 
-import clsx from "clsx"
 import { render } from "preact"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/hljs"
 
-import { getHosts, getLinks, getScriptTemplate, getTemplate } from "@helpers/demo"
+import { getHosts, getScriptTemplate, getTemplate } from "@helpers/demo"
 import { getWidgetPath, injectFonts } from "@helpers/shared"
 
 import { Button, DialerInput, Select, Switch, Tabs } from "@components/index"
@@ -20,8 +19,6 @@ import "./style.scss"
 const tabs = [{ title: "SPA" }, { title: "Window" }]
 
 export const DemoApp: FC = () => {
-  const demoLinksRef = useRef<HTMLDivElement>(null)
-
   const [isInjected, setIsInjected] = useState<DemoInjectedWidget>({
     spa: false,
     window: false
@@ -54,18 +51,7 @@ export const DemoApp: FC = () => {
     }
   }
 
-  const onMountLinks = () => {
-    if (!demoLinksRef.current) return
-
-    demoLinksRef.current.innerHTML = ""
-
-    const newLinks = getLinks(activeTab)
-    demoLinksRef.current.innerHTML = newLinks
-  }
-
   const onInitWidget = () => {
-    onMountLinks()
-
     const currentScript = document.querySelector("script[data-widget-script]")
 
     if (currentScript) {
@@ -224,11 +210,6 @@ export const DemoApp: FC = () => {
       <div className="demo-app__syntax">
         <SyntaxHighlighter style={nightOwl}>{getTemplate(activeTab, formData)}</SyntaxHighlighter>
       </div>
-
-      <div
-        ref={demoLinksRef}
-        className={clsx("demo-app__links", { "demo-app__links--visible": isInjected.spa || isInjected.window })}
-      />
     </div>
   )
 }

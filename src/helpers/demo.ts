@@ -17,27 +17,6 @@ export const getHosts = () => {
   ]
 }
 
-// NOTE: insert your test numbers
-const numbersArr = [
-  { title: "Your test number", number: "", callerId: "" },
-  { title: "Your test number (Caller Id: 1234567890)", number: "", callerId: "1234567890" }
-]
-
-const getOnClickContent = (tab: DemoTab, number: string, callerId?: string) => {
-  const content = {
-    spa: `javascript: wavixWebRTC.call('${number}'${callerId ? `, '${callerId}'` : ""})`,
-    window: `javascript: openWidgetWindow('${number}'${callerId ? `, '${callerId}'` : ""})`
-  }
-
-  return content[tab]
-}
-
-export const getLinks = (tab: DemoTab) => {
-  return numbersArr
-    .map(item => `<a href="#" onclick="${getOnClickContent(tab, item.number, item.callerId)}">${item.title}</a>`)
-    .join("\n        ")
-}
-
 const getConfigCallerIds = (callerIds: string) =>
   callerIds
     .split(",")
@@ -121,7 +100,6 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
 
       <body>   
         <div id="webrtc-widget" />
-        ${getLinks(tab)}    
       </body>
     `
   }
@@ -196,10 +174,6 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
           window.openWidgetWindow = openWidgetWindow
         })()
       </script>
-
-      <body>
-        ${getLinks(tab)}
-      </body>
     `
   }
 
