@@ -1,6 +1,63 @@
 import { getWidgetPath } from "@helpers/shared"
 
-import type { DemoFormData, DemoTab } from "@interfaces/demo"
+import { DemoTab } from "@interfaces/demo"
+
+import type { DemoFormData } from "@interfaces/demo"
+
+const EXPIRES_AT_KEY = "demo-form-data-expires-at"
+const FORM_DATA_KEY = "demo-form-data"
+const ONE_HOUR_MS = 60 * 60 * 1000
+
+export const widgetTypeTabs = [{ title: "SPA" }, { title: "Window" }]
+
+export const defaultDemoFormData: DemoFormData = {
+  sipServer: "",
+  token: "",
+  callerIds: "",
+  allowSelectCallerId: false,
+  autoDial: false,
+  customStyles: "",
+  customLogo: "",
+  customLink: "",
+  withLogo: false,
+  widgetType: DemoTab.Spa
+}
+
+const clearStoredFormData = () => {
+  localStorage.removeItem(EXPIRES_AT_KEY)
+  localStorage.removeItem(FORM_DATA_KEY)
+}
+
+export const loadStoredFormData = () => {
+  const storedExpiresAt = localStorage.getItem(EXPIRES_AT_KEY)
+  const storedFormData = localStorage.getItem(FORM_DATA_KEY)
+
+  if (!storedExpiresAt || Number(storedExpiresAt) < Date.now() || !storedFormData) {
+    clearStoredFormData()
+
+    return defaultDemoFormData
+  }
+
+  try {
+    const demoFormData = JSON.parse(storedFormData) as DemoFormData
+    const expiresAt = Date.now() + ONE_HOUR_MS
+
+    localStorage.setItem(EXPIRES_AT_KEY, String(expiresAt))
+
+    return demoFormData
+  } catch {
+    clearStoredFormData()
+
+    return defaultDemoFormData
+  }
+}
+
+export const saveStoredFormData = (demoFormData: DemoFormData) => {
+  const expiresAt = Date.now() + ONE_HOUR_MS
+
+  localStorage.setItem(EXPIRES_AT_KEY, String(expiresAt))
+  localStorage.setItem(FORM_DATA_KEY, JSON.stringify(demoFormData))
+}
 
 export const getHosts = () => {
   const sipServer = import.meta.env.VITE_SIP_SERVER
@@ -43,8 +100,8 @@ const getConfig = (formData: DemoFormData, container: { type: "containerId" | "w
               },`
 }
 
-export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
-  if (tab === "spa") {
+export const getTemplate = (formData: DemoFormData) => {
+  if (formData.widgetType === DemoTab.Spa) {
     const containerId = "webrtc-widget"
 
     return `
@@ -104,7 +161,7 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
     `
   }
 
-  if (tab === "window") {
+  if (formData.widgetType === DemoTab.Window) {
     const width = 288
     const height = formData.withLogo ? 504 : 460
     const windowTitle = "Wavix softphone"
@@ -180,8 +237,8 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
   return "No content"
 }
 
-export const getScriptTemplate = (tab: DemoTab, formData: DemoFormData) => {
-  if (tab === "spa") {
+export const getScriptTemplate = (formData: DemoFormData) => {
+  if (formData.widgetType === DemoTab.Spa) {
     const containerId = "webrtc-widget"
 
     return `
@@ -233,7 +290,7 @@ export const getScriptTemplate = (tab: DemoTab, formData: DemoFormData) => {
     `
   }
 
-  if (tab === "window") {
+  if (formData.widgetType === DemoTab.Window) {
     const width = 288
     const height = formData.withLogo ? 504 : 460
     const windowTitle = "Wavix softphone"
