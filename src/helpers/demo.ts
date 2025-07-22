@@ -81,8 +81,9 @@ const getConfigCallerIds = (callerIds: string) =>
     .filter(Boolean)
 
 const getConfig = (formData: DemoFormData, container: { type: "containerId" | "windowTitle"; name: string }) => {
-  const callerIds = getConfigCallerIds(formData.callerIds)
-  const callerIdsStr = callerIds.length ? `["${getConfigCallerIds(formData.callerIds).join('", "')}"]` : "[]"
+  const callerIdsArr = getConfigCallerIds(formData.callerIds)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const callerIds = callerIdsArr.length ? `["${getConfigCallerIds(formData.callerIds).join('", "')}"]` : "[]"
 
   return `widget: {
                 ${container.type}: "${container.name}",
@@ -94,8 +95,6 @@ const getConfig = (formData: DemoFormData, container: { type: "containerId" | "w
               sip: {
                 server: "${formData.sipServer}",
                 token: "${formData.token.trim()}",
-                callerIds: ${callerIdsStr},
-                allowSelectCallerId: ${formData.allowSelectCallerId},
                 autoDial: ${formData.autoDial},
               },`
 }

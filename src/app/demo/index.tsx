@@ -102,23 +102,9 @@ export const DemoApp: FC = () => {
             }
             label="Access token"
           />
-          <DialerInput
-            value={formData.callerIds}
-            onChange={event =>
-              setFormData(prevFormData => ({ ...prevFormData, callerIds: (event.target as HTMLInputElement).value }))
-            }
-            label="Caller IDs"
-          />
         </div>
 
         <div className="demo-app__checkboxes">
-          <Switch
-            onChange={() =>
-              setFormData(prevFormData => ({ ...prevFormData, allowSelectCallerId: !prevFormData.allowSelectCallerId }))
-            }
-            checked={formData.allowSelectCallerId}
-            label="Allow select caller ID"
-          />
           <Switch
             onChange={() => setFormData(prevFormData => ({ ...prevFormData, autoDial: !prevFormData.autoDial }))}
             checked={formData.autoDial}
