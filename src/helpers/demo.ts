@@ -350,8 +350,15 @@ export const getScriptTemplate = (formData: DemoFormData) => {
           
           const params = \`width=$\{width}, height=$\{height}, top=$\{top}, left=$\{left}, resizable=no, scrollbars=no, status=yes\`
           const urlParams = \`config_token=$\{configToken}$\{to ? \`&to=$\{to}\` : ''}$\{from ? \`&from=$\{from}\` : ''}\`
+          const targetUrl = \`${windowUrl}/widget.html?$\{urlParams}\`
+
+          const widgetWindow = window.open(targetUrl, 'wavix_webrtc', params)
+
+          if (widgetWindow) {
+            widgetWindow.focus()
+          }
           
-          wavixWebRTC.widgetWindowLink = window.open(\`${windowUrl}/widget.html?\` + urlParams, null, params)
+          wavixWebRTC.widgetWindowLink = widgetWindow
         }
 
         window.openWidgetWindow = openWidgetWindow
