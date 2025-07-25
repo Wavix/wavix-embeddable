@@ -1,6 +1,63 @@
 import { getWidgetPath } from "@helpers/shared"
 
-import type { DemoFormData, DemoTab } from "@interfaces/demo"
+import { DemoTab } from "@interfaces/demo"
+
+import type { DemoFormData } from "@interfaces/demo"
+
+const EXPIRES_AT_KEY = "demo-form-data-expires-at"
+const FORM_DATA_KEY = "demo-form-data"
+const ONE_HOUR_MS = 60 * 60 * 1000
+
+export const widgetTypeTabs = [{ title: "SPA" }, { title: "Window" }]
+
+export const defaultDemoFormData: DemoFormData = {
+  sipServer: "",
+  token: "",
+  callerIds: "",
+  allowSelectCallerId: false,
+  autoDial: false,
+  customStyles: "",
+  customLogo: "",
+  customLink: "",
+  withLogo: false,
+  widgetType: DemoTab.Spa
+}
+
+const clearStoredFormData = () => {
+  localStorage.removeItem(EXPIRES_AT_KEY)
+  localStorage.removeItem(FORM_DATA_KEY)
+}
+
+export const loadStoredFormData = () => {
+  const storedExpiresAt = localStorage.getItem(EXPIRES_AT_KEY)
+  const storedFormData = localStorage.getItem(FORM_DATA_KEY)
+
+  if (!storedExpiresAt || Number(storedExpiresAt) < Date.now() || !storedFormData) {
+    clearStoredFormData()
+
+    return defaultDemoFormData
+  }
+
+  try {
+    const demoFormData = JSON.parse(storedFormData) as DemoFormData
+    const expiresAt = Date.now() + ONE_HOUR_MS
+
+    localStorage.setItem(EXPIRES_AT_KEY, String(expiresAt))
+
+    return demoFormData
+  } catch {
+    clearStoredFormData()
+
+    return defaultDemoFormData
+  }
+}
+
+export const saveStoredFormData = (demoFormData: DemoFormData) => {
+  const expiresAt = Date.now() + ONE_HOUR_MS
+
+  localStorage.setItem(EXPIRES_AT_KEY, String(expiresAt))
+  localStorage.setItem(FORM_DATA_KEY, JSON.stringify(demoFormData))
+}
 
 export const getHosts = () => {
   const sipServer = import.meta.env.VITE_SIP_SERVER
@@ -17,27 +74,6 @@ export const getHosts = () => {
   ]
 }
 
-// NOTE: insert your test numbers
-const numbersArr = [
-  { title: "Your test number", number: "", callerId: "" },
-  { title: "Your test number (Caller Id: 1234567890)", number: "", callerId: "1234567890" }
-]
-
-const getOnClickContent = (tab: DemoTab, number: string, callerId?: string) => {
-  const content = {
-    spa: `javascript: wavixWebRTC.call('${number}'${callerId ? `, '${callerId}'` : ""})`,
-    window: `javascript: openWidgetWindow('${number}'${callerId ? `, '${callerId}'` : ""})`
-  }
-
-  return content[tab]
-}
-
-export const getLinks = (tab: DemoTab) => {
-  return numbersArr
-    .map(item => `<a href="#" onclick="${getOnClickContent(tab, item.number, item.callerId)}">${item.title}</a>`)
-    .join("\n        ")
-}
-
 const getConfigCallerIds = (callerIds: string) =>
   callerIds
     .split(",")
@@ -45,8 +81,9 @@ const getConfigCallerIds = (callerIds: string) =>
     .filter(Boolean)
 
 const getConfig = (formData: DemoFormData, container: { type: "containerId" | "windowTitle"; name: string }) => {
-  const callerIds = getConfigCallerIds(formData.callerIds)
-  const callerIdsStr = callerIds.length ? `["${getConfigCallerIds(formData.callerIds).join('", "')}"]` : "[]"
+  const callerIdsArr = getConfigCallerIds(formData.callerIds)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const callerIds = callerIdsArr.length ? `["${getConfigCallerIds(formData.callerIds).join('", "')}"]` : "[]"
 
   return `widget: {
                 ${container.type}: "${container.name}",
@@ -58,14 +95,12 @@ const getConfig = (formData: DemoFormData, container: { type: "containerId" | "w
               sip: {
                 server: "${formData.sipServer}",
                 token: "${formData.token.trim()}",
-                callerIds: ${callerIdsStr},
-                allowSelectCallerId: ${formData.allowSelectCallerId},
                 autoDial: ${formData.autoDial},
               },`
 }
 
-export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
-  if (tab === "spa") {
+export const getTemplate = (formData: DemoFormData) => {
+  if (formData.widgetType === DemoTab.Spa) {
     const containerId = "webrtc-widget"
 
     return `
@@ -121,12 +156,11 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
 
       <body>   
         <div id="webrtc-widget" />
-        ${getLinks(tab)}    
       </body>
     `
   }
 
-  if (tab === "window") {
+  if (formData.widgetType === DemoTab.Window) {
     const width = 288
     const height = formData.withLogo ? 504 : 460
     const windowTitle = "Wavix softphone"
@@ -196,18 +230,14 @@ export const getTemplate = (tab: DemoTab, formData: DemoFormData) => {
           window.openWidgetWindow = openWidgetWindow
         })()
       </script>
-
-      <body>
-        ${getLinks(tab)}
-      </body>
     `
   }
 
   return "No content"
 }
 
-export const getScriptTemplate = (tab: DemoTab, formData: DemoFormData) => {
-  if (tab === "spa") {
+export const getScriptTemplate = (formData: DemoFormData) => {
+  if (formData.widgetType === DemoTab.Spa) {
     const containerId = "webrtc-widget"
 
     return `
@@ -259,7 +289,7 @@ export const getScriptTemplate = (tab: DemoTab, formData: DemoFormData) => {
     `
   }
 
-  if (tab === "window") {
+  if (formData.widgetType === DemoTab.Window) {
     const width = 288
     const height = formData.withLogo ? 504 : 460
     const windowTitle = "Wavix softphone"
@@ -320,8 +350,15 @@ export const getScriptTemplate = (tab: DemoTab, formData: DemoFormData) => {
           
           const params = \`width=$\{width}, height=$\{height}, top=$\{top}, left=$\{left}, resizable=no, scrollbars=no, status=yes\`
           const urlParams = \`config_token=$\{configToken}$\{to ? \`&to=$\{to}\` : ''}$\{from ? \`&from=$\{from}\` : ''}\`
+          const targetUrl = \`${windowUrl}/widget.html?$\{urlParams}\`
+
+          const widgetWindow = window.open(targetUrl, 'wavix_webrtc', params)
+
+          if (widgetWindow) {
+            widgetWindow.focus()
+          }
           
-          wavixWebRTC.widgetWindowLink = window.open(\`${windowUrl}/widget.html?\` + urlParams, null, params)
+          wavixWebRTC.widgetWindowLink = widgetWindow
         }
 
         window.openWidgetWindow = openWidgetWindow

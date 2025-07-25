@@ -50,12 +50,17 @@ jobs:
 
       - name: Create or Update Release
         run: |
-          if gh release upload "v${{ steps.version.outputs.VERSION }}" \
-            wavix-embeddable-v${{ steps.version.outputs.VERSION }}.zip \
-            wavix-embeddable-v${{ steps.version.outputs.VERSION }}.tar.gz \
-            --clobber 2>/dev/null; then
+          TAG="v${{ steps.version.outputs.VERSION }}"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG exists, uploading files..."
+            gh release upload "$TAG" \
+              wavix-embeddable-v${{ steps.version.outputs.VERSION }}.zip \
+              wavix-embeddable-v${{ steps.version.outputs.VERSION }}.tar.gz \
+              --clobber
           else
-            gh release create "v${{ steps.version.outputs.VERSION }}" \
+            echo "Creating new release $TAG..."
+            gh release create "$TAG" \
               wavix-embeddable-v${{ steps.version.outputs.VERSION }}.zip \
               wavix-embeddable-v${{ steps.version.outputs.VERSION }}.tar.gz \
               --title "Release v${{ steps.version.outputs.VERSION }}" \

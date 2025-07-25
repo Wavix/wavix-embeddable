@@ -3,7 +3,10 @@ export type DemoInjectedWidget = {
   window: boolean
 }
 
-export type DemoTab = "spa" | "window"
+export enum DemoTab {
+  Spa,
+  Window
+}
 
 export type DemoFormData = {
   sipServer: string
@@ -15,4 +18,5 @@ export type DemoFormData = {
   withLogo: boolean
   autoDial: boolean
   allowSelectCallerId: boolean
+  widgetType: DemoTab
 }
