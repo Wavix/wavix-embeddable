@@ -59,7 +59,7 @@ jobs:
               wavix-embeddable-v${{ steps.version.outputs.VERSION }}.zip \
               wavix-embeddable-v${{ steps.version.outputs.VERSION }}.tar.gz \
               --title "Release v${{ steps.version.outputs.VERSION }}" \
-              --notes "Wavix Embeddable Widget v${{ steps.version.outputs.VERSION }}"
+              --notes "Wavix Embeddable v${{ steps.version.outputs.VERSION }}"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
