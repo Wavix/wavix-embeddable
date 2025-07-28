@@ -98,20 +98,4 @@
     justify-content: center;
     width: 100%;
   }
-
-  &__links {
-    opacity: 0;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-
-    a {
-      color: var(--text-accent);
-    }
-
-    &--visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-  }
 }

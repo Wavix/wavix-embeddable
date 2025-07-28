@@ -1,70 +1,39 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 
-import clsx from "clsx"
 import { render } from "preact"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/hljs"
 
-import { getHosts, getLinks, getScriptTemplate, getTemplate } from "@helpers/demo"
+import {
+  widgetTypeTabs,
+  defaultDemoFormData,
+  loadStoredFormData,
+  saveStoredFormData,
+  getHosts,
+  getScriptTemplate,
+  getTemplate
+} from "@helpers/demo"
 import { getWidgetPath, injectFonts } from "@helpers/shared"
 
 import { Button, DialerInput, Select, Switch, Tabs } from "@components/index"
 
-import type { SelectOption } from "@components/index"
-import type { DemoInjectedWidget, DemoTab, DemoFormData } from "@interfaces/demo"
+import { DemoTab } from "@interfaces/demo"
+
+import type { DemoInjectedWidget } from "@interfaces/demo"
 import type { FC } from "react"
 
 import "@styles/index.scss"
 import "./style.scss"
 
-const tabs = [{ title: "SPA" }, { title: "Window" }]
-
 export const DemoApp: FC = () => {
-  const demoLinksRef = useRef<HTMLDivElement>(null)
-
+  const [formData, setFormData] = useState(defaultDemoFormData)
   const [isInjected, setIsInjected] = useState<DemoInjectedWidget>({
     spa: false,
     window: false
   })
 
-  const [activeTab, setActiveTab] = useState<DemoTab>("spa")
-
-  const [hosts, setHosts] = useState<Array<SelectOption>>([])
-  const [formData, setFormData] = useState<DemoFormData>({
-    sipServer: "",
-    token: "",
-    callerIds: "",
-    allowSelectCallerId: false,
-    autoDial: false,
-    customStyles: "",
-    customLogo: "",
-    customLink: "",
-    withLogo: false
-  })
-
-  const getActiveTabNumber = () => (activeTab === "window" ? 1 : 0)
-
-  const setActiveTabNumber = (index: number) => {
-    if (index === 0) {
-      setActiveTab("spa")
-    }
-
-    if (index === 1) {
-      setActiveTab("window")
-    }
-  }
-
-  const onMountLinks = () => {
-    if (!demoLinksRef.current) return
-
-    demoLinksRef.current.innerHTML = ""
-
-    const newLinks = getLinks(activeTab)
-    demoLinksRef.current.innerHTML = newLinks
-  }
-
   const onInitWidget = () => {
-    onMountLinks()
+    saveStoredFormData(formData)
 
     const currentScript = document.querySelector("script[data-widget-script]")
 
@@ -72,7 +41,7 @@ export const DemoApp: FC = () => {
       currentScript.remove()
     }
 
-    if (activeTab === "window") {
+    if (formData.widgetType === DemoTab.Window) {
       const widgetRoot = document.getElementById("webrtc-widget")
 
       if (widgetRoot) {
@@ -82,7 +51,7 @@ export const DemoApp: FC = () => {
       setIsInjected({ spa: false, window: true })
     }
 
-    if (activeTab === "spa") {
+    if (formData.widgetType === DemoTab.Spa) {
       // @ts-ignore
       const windowLink = window.wavixWebRTC?.widgetWindowLink
 
@@ -95,7 +64,7 @@ export const DemoApp: FC = () => {
 
     const newScript = document.createElement("script")
     newScript.setAttribute("data-widget-script", "true")
-    newScript.innerHTML = getScriptTemplate(activeTab, formData)
+    newScript.innerHTML = getScriptTemplate(formData)
 
     document.body.appendChild(newScript)
   }
@@ -105,7 +74,8 @@ export const DemoApp: FC = () => {
       await injectFonts()
     })()
 
-    setHosts(getHosts())
+    const storedFormData = loadStoredFormData()
+    setFormData(storedFormData)
   }, [])
 
   return (
@@ -120,8 +90,8 @@ export const DemoApp: FC = () => {
 
         <div className="demo-app__inputs">
           <Select
-            onSelect={option => setFormData({ ...formData, sipServer: option?.value || "" })}
-            options={hosts}
+            onSelect={option => setFormData(prevFormData => ({ ...prevFormData, sipServer: option?.value || "" }))}
+            options={getHosts()}
             selected={{ value: formData.sipServer, label: formData.sipServer }}
             label="Server"
           />
@@ -132,23 +102,11 @@ export const DemoApp: FC = () => {
             }
             label="Access token"
           />
-          <DialerInput
-            value={formData.callerIds}
-            onChange={event =>
-              setFormData(prevFormData => ({ ...prevFormData, callerIds: (event.target as HTMLInputElement).value }))
-            }
-            label="Caller IDs"
-          />
         </div>
 
         <div className="demo-app__checkboxes">
           <Switch
-            onChange={() => setFormData({ ...formData, allowSelectCallerId: !formData.allowSelectCallerId })}
-            checked={formData.allowSelectCallerId}
-            label="Allow select caller ID"
-          />
-          <Switch
-            onChange={() => setFormData({ ...formData, autoDial: !formData.autoDial })}
+            onChange={() => setFormData(prevFormData => ({ ...prevFormData, autoDial: !prevFormData.autoDial }))}
             checked={formData.autoDial}
             label="Dial automatically"
           />
@@ -198,7 +156,7 @@ export const DemoApp: FC = () => {
 
         <div className="demo-app__controls">
           <Switch
-            onChange={() => setFormData({ ...formData, withLogo: !formData.withLogo })}
+            onChange={() => setFormData(prevFormData => ({ ...prevFormData, withLogo: !prevFormData.withLogo }))}
             checked={formData.withLogo}
             label="With logo"
           />
@@ -208,8 +166,8 @@ export const DemoApp: FC = () => {
             disabled={
               !formData.token ||
               !formData.sipServer ||
-              (activeTab === "spa" && isInjected.spa) ||
-              (activeTab === "window" && isInjected.window)
+              (formData.widgetType === DemoTab.Spa && isInjected.spa) ||
+              (formData.widgetType === DemoTab.Window && isInjected.window)
             }
           >
             Launch widget
@@ -218,17 +176,16 @@ export const DemoApp: FC = () => {
       </div>
 
       <div className="demo-app__tabs">
-        <Tabs tabs={tabs} activeTab={getActiveTabNumber()} setActiveTab={setActiveTabNumber} />
+        <Tabs
+          tabs={widgetTypeTabs}
+          activeTab={formData.widgetType}
+          setActiveTab={activeTab => setFormData(prevFormData => ({ ...prevFormData, widgetType: activeTab }))}
+        />
       </div>
 
       <div className="demo-app__syntax">
-        <SyntaxHighlighter style={nightOwl}>{getTemplate(activeTab, formData)}</SyntaxHighlighter>
+        <SyntaxHighlighter style={nightOwl}>{getTemplate(formData)}</SyntaxHighlighter>
       </div>
-
-      <div
-        ref={demoLinksRef}
-        className={clsx("demo-app__links", { "demo-app__links--visible": isInjected.spa || isInjected.window })}
-      />
     </div>
   )
 }
