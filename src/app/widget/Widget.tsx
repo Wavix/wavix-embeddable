@@ -428,8 +428,6 @@ export const Widget: FC<Props> = ({ config }) => {
   ) => {
     switch (response.message.statusCode) {
       case 180:
-        startRingSound()
-
         sendEvent({
           type: SipEvent.Ringing,
           payload
