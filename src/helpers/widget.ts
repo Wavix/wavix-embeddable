@@ -267,10 +267,10 @@ const startVoiceDetection = (remoteStream: MediaStream, onVoiceActivity: (value:
 
 export const setupRemoteMedia = (session: Session, onVoiceActivity: (value: boolean) => void) => {
   const remoteStream = getRemoteStream(session)
-
   const audio = document.getElementById("phone-audio") as HTMLAudioElement
   if (audio) {
     audio.srcObject = remoteStream
+    audio.muted = false
     audio.play()
   }
 
