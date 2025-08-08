@@ -49,7 +49,6 @@ export const Widget: FC<Props> = ({ config }) => {
   const { sipAccounts, activeSipAccountSessionId, updateSipAccount } = useContext(AccountContext)
   const { sessions, activeSessionId, updateSession, setActiveSessionId, dropSessions } = useContext(SessionContext)
   const { setInboundSipEventPayload, sendEvent } = useContext(SipEventContext)
-
   const registrationInterval = useRef<ReturnType<typeof setInterval> | null>(null)
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const screenSwitchDelayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -57,6 +56,7 @@ export const Widget: FC<Props> = ({ config }) => {
   const currentJwtRef = useRef<string | null>(null)
   const hasActiveCallRef = useRef<boolean>(false)
   const ringSoundIntervalRef = useRef(0)
+  const sessionsRef = useRef<Record<string, ActiveSession>>({})
 
   const [isRemoteSpeaking, setIsRemoteSpeaking] = useState(false)
   const [activeExternalCallerId, setActiveExternalCallerId] = useState<string | undefined>(config.sip.callerIds?.[0])
@@ -428,8 +428,6 @@ export const Widget: FC<Props> = ({ config }) => {
   ) => {
     switch (response.message.statusCode) {
       case 180:
-        startRingSound()
-
         sendEvent({
           type: SipEvent.Ringing,
           payload
@@ -440,13 +438,17 @@ export const Widget: FC<Props> = ({ config }) => {
         break
 
       case 183:
-        startRingSound()
-
         updateSession({
           type: SessionAction.ChangeStatus,
           sessionId,
           status: SessionStatus.Progress
         })
+
+        // Early media for 183 Session Progress
+        const activeSession = getActiveSipSession(sessionsRef.current, sessionId)
+        if (activeSession?.invite.id === sessionId) {
+          setupRemoteMedia(activeSession.invite, setIsRemoteSpeaking)
+        }
 
         break
 
@@ -473,11 +475,6 @@ export const Widget: FC<Props> = ({ config }) => {
         return newState
 
       case SessionState.Established:
-        if (isCurrentSession) {
-          stopRingSound()
-          setupRemoteMedia(session, setIsRemoteSpeaking)
-        }
-
         sendEvent({
           type: SipEvent.Answered,
           payload: sipEventBasePayload
@@ -631,6 +628,7 @@ export const Widget: FC<Props> = ({ config }) => {
         })
       },
       extraHeaders: [`X-token-jwt: ${activeAccount.jwtToken}`, `X-Call-UUID: ${uuid}`],
+      earlyMedia: true,
       sessionDescriptionHandlerOptions: {
         constraints: { audio: true, video: false }
       }
@@ -722,6 +720,10 @@ export const Widget: FC<Props> = ({ config }) => {
       }
     }, 60_000)
   }
+
+  useEffect(() => {
+    sessionsRef.current = sessions
+  }, [sessions])
 
   useEffect(() => {
     if (!activeSessionId) return
