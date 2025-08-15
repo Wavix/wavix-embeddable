@@ -81,7 +81,7 @@ export const DemoApp: FC = () => {
   return (
     <div className="demo-app">
       <div className="demo-app__header">
-        <h1 className="demo-app__title">WebRTC example</h1>
+        <h1 className="demo-app__title">Wavix Embeddable</h1>
         <p className="demo-app__version">version {import.meta.env.PACKAGE_VERSION}</p>
       </div>
 
