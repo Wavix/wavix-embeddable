@@ -62,18 +62,18 @@ export const Widget: FC<Props> = ({ config }) => {
   const [activeExternalCallerId, setActiveExternalCallerId] = useState<string | undefined>(config.sip.callerIds?.[0])
 
   const [ringAudio, , ringControls] = useAudio({
-    src: `${getWidgetPath()}/assets/ring.wav`,
+    src: `${getWidgetPath()}/src/assets/audio/ring/ring.wav`,
     autoPlay: false
   })
 
   const isWindow = config.inner?.isWindow
   const activeSessionStatus = getActiveSipSession(sessions, activeSessionId)?.status
 
-  // const startRingSound = () => {
-  //   if (ringSoundIntervalRef.current) return
-  //   ringControls.play()
-  //   ringSoundIntervalRef.current = window.setInterval(() => ringControls.play(), 2000)
-  // }
+  const startRingSound = () => {
+    if (ringSoundIntervalRef.current) return
+    ringControls.play()
+    ringSoundIntervalRef.current = window.setInterval(() => ringControls.play(), 2000)
+  }
 
   const stopRingSound = () => {
     ringControls.pause()
@@ -475,8 +475,7 @@ export const Widget: FC<Props> = ({ config }) => {
 
       case SessionState.Established:
         if (isCurrentSession && sipEventBasePayload.direction === "inbound") {
-          // console.log("stopRingSound")
-          // stopRingSound()
+          stopRingSound()
         }
 
         sendEvent({
@@ -561,7 +560,7 @@ export const Widget: FC<Props> = ({ config }) => {
   }
 
   const onInboundInvite = (account: Account, invitation: Invitation, payload: BaseSipEventPayload) => {
-    // startRingSound()
+    startRingSound()
 
     sendEvent({
       type: SipEvent.Ringing,
