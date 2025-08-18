@@ -16,7 +16,6 @@ import { SipEventContext } from "@widget/providers/SipEventProvider"
 import { WsControllerContext } from "@widget/providers/WsControllerProvider"
 import { Call as CallTab, Error as ErrorTab, History as HistoryTab, Settings as SettingsTab } from "@widget/tabs"
 
-import { getWidgetPath } from "@helpers/shared"
 import { cleanupMedia, execListeners, saveHistory, setupRemoteMedia, getSessionCallerId } from "@helpers/widget"
 
 import { CallerIdType } from "@interfaces/widget"
@@ -41,6 +40,12 @@ const REGISTRATION_TIMEOUT = 1_000
 const REGISTRATION_INTERVAL = 60_000
 const REFRESH_TOKEN_INTERVAL = 13 * 60_000
 
+const ringSound = import.meta.glob<string>("/src/assets/audio/ring/ring.wav", {
+  query: "?url",
+  import: "default",
+  eager: true
+})
+
 export const Widget: FC<Props> = ({ config }) => {
   const { listeners, to, callerId, clearCallData } = useContext(CallDataContext)
   const { widgetScreenData, setWidgetScreenData } = useContext(ScreenContext)
@@ -62,7 +67,7 @@ export const Widget: FC<Props> = ({ config }) => {
   const [activeExternalCallerId, setActiveExternalCallerId] = useState<string | undefined>(config.sip.callerIds?.[0])
 
   const [ringAudio, , ringControls] = useAudio({
-    src: `${getWidgetPath()}/src/assets/audio/ring/ring.wav`,
+    src: ringSound["/src/assets/audio/ring/ring.wav"] || "",
     autoPlay: false
   })
 
