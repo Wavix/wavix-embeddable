@@ -481,6 +481,7 @@ export const Widget: FC<Props> = ({ config }) => {
       case SessionState.Established:
         if (isCurrentSession && sipEventBasePayload.direction === "inbound") {
           stopRingSound()
+          setupRemoteMedia(session, setIsRemoteSpeaking)
         }
 
         sendEvent({
