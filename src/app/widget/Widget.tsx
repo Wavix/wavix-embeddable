@@ -484,6 +484,10 @@ export const Widget: FC<Props> = ({ config }) => {
           setupRemoteMedia(session, setIsRemoteSpeaking)
         }
 
+        if (isCurrentSession && sipEventBasePayload.direction === "outbound") {
+          setupRemoteMedia(session, setIsRemoteSpeaking)
+        }
+
         sendEvent({
           type: SipEvent.Answered,
           payload: sipEventBasePayload
