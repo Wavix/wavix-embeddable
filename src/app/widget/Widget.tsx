@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 import clsx from "clsx"
-import { useAudio } from "react-use"
 import { Inviter, Registerer, RegistererState, SessionState, UserAgent } from "sip.js"
 import { v4 as uuidv4 } from "uuid"
 
@@ -16,6 +15,7 @@ import { SipEventContext } from "@widget/providers/SipEventProvider"
 import { WsControllerContext } from "@widget/providers/WsControllerProvider"
 import { Call as CallTab, Error as ErrorTab, History as HistoryTab, Settings as SettingsTab } from "@widget/tabs"
 
+import { playTonePattern, stopTonePattern, getTonePatternDuration } from "@helpers/tone"
 import { cleanupMedia, execListeners, saveHistory, setupRemoteMedia, getSessionCallerId } from "@helpers/widget"
 
 import { CallerIdType } from "@interfaces/widget"
@@ -40,11 +40,15 @@ const REGISTRATION_TIMEOUT = 1_000
 const REGISTRATION_INTERVAL = 60_000
 const REFRESH_TOKEN_INTERVAL = 13 * 60_000
 
-const ringSound = import.meta.glob<string>("/src/assets/audio/ring/ring.wav", {
-  query: "?url",
-  import: "default",
-  eager: true
-})
+const RING_TONE_PATTERN = "440+480/2000,0/4000" // us pattern
+const RING_TONE_DURATION = (() => {
+  try {
+    return getTonePatternDuration(RING_TONE_PATTERN)
+  } catch (error) {
+    console.warn("Invalid ring tone pattern", error)
+    return 0
+  }
+})()
 
 export const Widget: FC<Props> = ({ config }) => {
   const { listeners, to, callerId, clearCallData } = useContext(CallDataContext)
@@ -60,33 +64,38 @@ export const Widget: FC<Props> = ({ config }) => {
 
   const currentJwtRef = useRef<string | null>(null)
   const hasActiveCallRef = useRef<boolean>(false)
-  const ringSoundIntervalRef = useRef(0)
+  const ringSoundIntervalRef = useRef<number | null>(null)
   const sessionsRef = useRef<Record<string, ActiveSession>>({})
 
   const [isRemoteSpeaking, setIsRemoteSpeaking] = useState(false)
   const [activeExternalCallerId, setActiveExternalCallerId] = useState<string | undefined>(config.sip.callerIds?.[0])
 
-  const [ringAudio, , ringControls] = useAudio({
-    src: ringSound["/src/assets/audio/ring/ring.wav"] || "",
-    autoPlay: false
-  })
-
   const isWindow = config.inner?.isWindow
   const activeSessionStatus = getActiveSipSession(sessions, activeSessionId)?.status
 
   const startRingSound = () => {
-    if (ringSoundIntervalRef.current) return
-    ringControls.play()
-    ringSoundIntervalRef.current = window.setInterval(() => ringControls.play(), 2000)
+    if (ringSoundIntervalRef.current !== null) return
+
+    const playOnce = () => {
+      playTonePattern(RING_TONE_PATTERN).catch(error => {
+        console.warn("Failed to play ring tone pattern", error)
+      })
+    }
+
+    playOnce()
+
+    if (RING_TONE_DURATION > 0) {
+      ringSoundIntervalRef.current = window.setInterval(playOnce, RING_TONE_DURATION)
+    }
   }
 
   const stopRingSound = () => {
-    ringControls.pause()
-
-    if (ringSoundIntervalRef.current) {
+    if (ringSoundIntervalRef.current !== null) {
       clearInterval(ringSoundIntervalRef.current)
-      ringSoundIntervalRef.current = 0
+      ringSoundIntervalRef.current = null
     }
+
+    stopTonePattern()
   }
 
   const onRefreshToken = (token: string) => {
@@ -439,9 +448,14 @@ export const Widget: FC<Props> = ({ config }) => {
 
         updateSession({ type: SessionAction.ChangeStatus, sessionId, status: SessionStatus.Ringing })
 
+        // Ringback tone: The 180 response does not typically include Session Description Protocol (SDP) information,
+        // so the calling device generates its own ringback tone for the user.
+        startRingSound()
         break
 
       case 183:
+        stopRingSound()
+
         updateSession({
           type: SessionAction.ChangeStatus,
           sessionId,
@@ -485,6 +499,7 @@ export const Widget: FC<Props> = ({ config }) => {
         }
 
         if (isCurrentSession && sipEventBasePayload.direction === "outbound") {
+          stopRingSound()
           setupRemoteMedia(session, setIsRemoteSpeaking)
         }
 
@@ -787,7 +802,6 @@ export const Widget: FC<Props> = ({ config }) => {
 
   return (
     <div className="webrtc-widget-content">
-      {ringAudio}
       <audio id="phone-audio" controls>
         <track default kind="captions" />
       </audio>
