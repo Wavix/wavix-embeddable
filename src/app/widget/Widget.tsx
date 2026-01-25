@@ -61,6 +61,7 @@ export const Widget: FC<Props> = ({ config }) => {
   const registrationInterval = useRef<ReturnType<typeof setInterval> | null>(null)
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const screenSwitchDelayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const registrationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const currentJwtRef = useRef<string | null>(null)
   const hasActiveCallRef = useRef<boolean>(false)
@@ -247,7 +248,10 @@ export const Widget: FC<Props> = ({ config }) => {
               state: AccountState.UnRegistered
             })
 
-            setTimeout(() => {
+            if (registrationTimeoutRef.current) {
+              clearTimeout(registrationTimeoutRef.current)
+            }
+            registrationTimeoutRef.current = setTimeout(() => {
               registration(account)
             }, REGISTRATION_TIMEOUT)
           }
@@ -752,6 +756,39 @@ export const Widget: FC<Props> = ({ config }) => {
   useEffect(() => {
     sessionsRef.current = sessions
   }, [sessions])
+
+  useEffect(() => {
+    return () => {
+      if (registrationInterval.current) {
+        clearInterval(registrationInterval.current)
+        registrationInterval.current = null
+      }
+
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current)
+        refreshTimeoutRef.current = null
+      }
+
+      if (screenSwitchDelayTimeoutRef.current) {
+        clearTimeout(screenSwitchDelayTimeoutRef.current)
+        screenSwitchDelayTimeoutRef.current = null
+      }
+
+      if (registrationTimeoutRef.current) {
+        clearTimeout(registrationTimeoutRef.current)
+        registrationTimeoutRef.current = null
+      }
+
+      stopRingSound()
+      cleanupMedia()
+
+      if (activeSipAccountSessionId && sipAccounts[activeSipAccountSessionId]) {
+        const account = sipAccounts[activeSipAccountSessionId]
+        account.registration?.unregister().catch(() => {})
+        account.ua?.stop().catch(() => {})
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!activeSessionId) return

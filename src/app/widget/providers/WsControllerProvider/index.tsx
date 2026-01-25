@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext, createContext } from "react"
+import { useState, useEffect, useRef, useContext, createContext, useCallback } from "react"
 
 import { ErrorContext } from "@widget/providers/ErrorProvider"
 
@@ -24,27 +24,56 @@ export const WsControllerProvider: FC<Props> = ({ children }) => {
 
   const wsControllerRef = useRef<WebSocket | null>(null)
   const wsControllerPingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isMountedRef = useRef(true)
+
   const [isWsControllerConnected, setWsControllerConnected] = useState(false)
 
-  const sendToWsController = (event: ControllerSendEvent) => {
-    if (!wsControllerRef.current) return
+  const sendToWsController = useCallback((event: ControllerSendEvent) => {
+    if (!wsControllerRef.current || wsControllerRef.current.readyState !== WebSocket.OPEN) return
 
     try {
       wsControllerRef.current.send(JSON.stringify(event))
     } catch {
       console.error("[WavixWebRTC] Failed to send message to ws controller")
     }
-  }
+  }, [])
 
-  const setupWsController = () => {
+  const cleanup = useCallback(() => {
+    if (wsControllerPingRef.current) {
+      clearInterval(wsControllerPingRef.current)
+      wsControllerPingRef.current = null
+    }
+
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current)
+      reconnectTimeoutRef.current = null
+    }
+
+    if (wsControllerRef.current) {
+      wsControllerRef.current.close()
+      wsControllerRef.current = null
+    }
+  }, [])
+
+  const setupWsController = useCallback(() => {
+    if (!isMountedRef.current) return
+
+    cleanup()
+
     const socket = new WebSocket(import.meta.env.VITE_CONTROLLER_URI)
 
     socket.onopen = () => {
+      if (!isMountedRef.current) {
+        socket.close()
+        return
+      }
+
       setWsControllerConnected(true)
 
       wsControllerPingRef.current = setInterval(() => {
-        if (socket.readyState === socket.OPEN) {
-          sendToWsController({ type: ControllerSendAction.Ping })
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: ControllerSendAction.Ping }))
         }
       }, WS_CONTROLLER_PING_INTERVAL)
     }
@@ -52,26 +81,37 @@ export const WsControllerProvider: FC<Props> = ({ children }) => {
     socket.onclose = () => {
       if (wsControllerPingRef.current) {
         clearInterval(wsControllerPingRef.current)
+        wsControllerPingRef.current = null
       }
 
-      setWsControllerConnected(false)
+      if (isMountedRef.current) {
+        setWsControllerConnected(false)
 
-      setTimeout(() => {
-        setupWsController()
-      }, WS_CONTROLLER_SETUP_TIMEOUT)
+        reconnectTimeoutRef.current = setTimeout(() => {
+          setupWsController()
+        }, WS_CONTROLLER_SETUP_TIMEOUT)
+      }
     }
 
     socket.onerror = error => {
       console.error("[WavixWebRTC] Failed to connect to ws controller", error)
-      errorContext.setWidgetError("server-connection-error")
+      if (isMountedRef.current) {
+        errorContext.setWidgetError("server-connection-error")
+      }
     }
 
     wsControllerRef.current = socket
-  }
+  }, [cleanup, errorContext])
 
   useEffect(() => {
+    isMountedRef.current = true
     setupWsController()
-  }, [])
+
+    return () => {
+      isMountedRef.current = false
+      cleanup()
+    }
+  }, [setupWsController, cleanup])
 
   return (
     <WsControllerContext.Provider

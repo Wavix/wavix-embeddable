@@ -217,6 +217,9 @@ export const saveSettings = (settings: WidgetSettings) => {
 const VOLUME_THRESHOLD = 8
 const FFT_SIZE = 256
 
+let animationFrameId: number | null = null
+let audioContextRef: AudioContext | null = null
+
 const getRemoteStream = (session: Session): MediaStream => {
   const remoteStream = new MediaStream()
 
@@ -233,10 +236,15 @@ const getRemoteStream = (session: Session): MediaStream => {
 }
 
 const createAudioAnalyzer = (remoteStream: MediaStream) => {
-  const audioContext = new AudioContext()
+  if (audioContextRef) {
+    audioContextRef.close().catch(() => {})
+    audioContextRef = null
+  }
 
-  const source = audioContext.createMediaStreamSource(remoteStream)
-  const analyser = audioContext.createAnalyser()
+  audioContextRef = new AudioContext()
+
+  const source = audioContextRef.createMediaStreamSource(remoteStream)
+  const analyser = audioContextRef.createAnalyser()
 
   analyser.fftSize = FFT_SIZE
   const dataArray = new Uint8Array(analyser.frequencyBinCount)
@@ -247,9 +255,15 @@ const createAudioAnalyzer = (remoteStream: MediaStream) => {
 }
 
 const startVoiceDetection = (remoteStream: MediaStream, onVoiceActivity: (value: boolean) => void) => {
+  stopVoiceDetection()
+
   const { analyser, dataArray } = createAudioAnalyzer(remoteStream)
 
   const detectVoiceActivity = (): void => {
+    if (!audioContextRef || audioContextRef.state === "closed") {
+      return
+    }
+
     analyser.getByteFrequencyData(dataArray)
 
     const averageVolume =
@@ -259,10 +273,22 @@ const startVoiceDetection = (remoteStream: MediaStream, onVoiceActivity: (value:
 
     onVoiceActivity(averageVolume > VOLUME_THRESHOLD)
 
-    requestAnimationFrame(detectVoiceActivity)
+    animationFrameId = requestAnimationFrame(detectVoiceActivity)
   }
 
   detectVoiceActivity()
+}
+
+export const stopVoiceDetection = () => {
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
+
+  if (audioContextRef) {
+    audioContextRef.close().catch(() => {})
+    audioContextRef = null
+  }
 }
 
 export const setupRemoteMedia = (session: Session, onVoiceActivity: (value: boolean) => void) => {
@@ -278,9 +304,18 @@ export const setupRemoteMedia = (session: Session, onVoiceActivity: (value: bool
 }
 
 export const cleanupMedia = () => {
+  stopVoiceDetection()
+
   const audio = document.getElementById("phone-audio") as HTMLAudioElement
-  audio.srcObject = null
-  audio.pause()
+  if (audio) {
+    const stream = audio.srcObject as MediaStream
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+    }
+
+    audio.srcObject = null
+    audio.pause()
+  }
 }
 
 /**
