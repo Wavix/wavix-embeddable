@@ -55,8 +55,11 @@ export const AccountProvider: FC<Props> = ({ config, children }) => {
       saveAccountsRegistration(sipAccounts)
     }
 
-    window.removeEventListener("beforeunload", onBeforeUnload)
     window.addEventListener("beforeunload", onBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload)
+    }
   }, [sipAccounts])
 
   useEffect(() => {

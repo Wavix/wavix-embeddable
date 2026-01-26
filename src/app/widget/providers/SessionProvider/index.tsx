@@ -44,15 +44,28 @@ export const SessionProvider: FC<Props> = ({ children }) => {
   }
 
   useEffect(() => {
-    window.removeEventListener("beforeunload", dropSessions)
-    window.addEventListener("beforeunload", dropSessions)
-  }, [activeSessionId])
+    const handleBeforeUnload = () => {
+      if (!activeSessionId) return
 
-  useEffect(() => {
-    return () => {
-      dropSessions()
+      const session = getActiveSipSession(sessions, activeSessionId)
+
+      if (session?.status === SessionStatus.Answered) {
+        session.invite.bye()
+        return
+      }
+
+      if (session) {
+        // @ts-ignore
+        session.invite.cancel?.()
+      }
     }
-  }, [])
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [activeSessionId, sessions])
 
   return (
     <SessionContext.Provider value={{ sessions, activeSessionId, updateSession, setActiveSessionId, dropSessions }}>
