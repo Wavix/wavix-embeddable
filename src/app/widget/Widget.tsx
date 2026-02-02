@@ -16,7 +16,14 @@ import { WsControllerContext } from "@widget/providers/WsControllerProvider"
 import { Call as CallTab, Error as ErrorTab, History as HistoryTab, Settings as SettingsTab } from "@widget/tabs"
 
 import { playTonePattern, stopTonePattern, getTonePatternDuration } from "@helpers/tone"
-import { cleanupMedia, execListeners, saveHistory, setupRemoteMedia, getSessionCallerId } from "@helpers/widget"
+import {
+  cleanupMedia,
+  execListeners,
+  saveHistory,
+  setupRemoteMedia,
+  getSessionCallerId,
+  disposeSession
+} from "@helpers/widget"
 
 import { CallerIdType } from "@interfaces/widget"
 import { AccountAction, AccountState } from "@interfaces/widget-account"
@@ -528,10 +535,12 @@ export const Widget: FC<Props> = ({ config }) => {
 
       case SessionState.Terminated:
         hasActiveCallRef.current = false
-        saveHistory(getActiveSipSession(sessions, session.id))
+        const terminatedSession = getActiveSipSession(sessions, session.id)
+        saveHistory(terminatedSession)
         stopRingSound()
 
         cleanupMedia()
+        disposeSession(session, terminatedSession?.stateCallback)
 
         if (sipEventBasePayload.direction === "inbound") {
           termination()
@@ -718,6 +727,8 @@ export const Widget: FC<Props> = ({ config }) => {
         onReject(response) {
           if (response.message.statusCode === 487) {
             if (outboundSession?.id) {
+              const rejectedSession = getActiveSipSession(sessionsRef.current, outboundSession.id)
+              disposeSession(outboundSession, rejectedSession?.stateCallback)
               updateSession({ type: SessionAction.Remove, sessionId: outboundSession.id })
             }
 
@@ -739,6 +750,14 @@ export const Widget: FC<Props> = ({ config }) => {
             type: SipEvent.Busy,
             payload
           })
+
+          setTimeout(() => {
+            const busySession = getActiveSipSession(sessionsRef.current, outboundSession.id)
+            if (busySession) {
+              disposeSession(outboundSession, busySession.stateCallback)
+              updateSession({ type: SessionAction.Remove, sessionId: outboundSession.id })
+            }
+          }, 2_000)
         },
         onAccept() {
           hasActiveCallRef.current = true

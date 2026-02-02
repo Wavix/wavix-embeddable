@@ -3,7 +3,7 @@
   "repository": "git@github.com:wavix/wavix-embeddable.git",
   "author": "Wavix Inc. <product@wavix.com>",
   "license": "MIT",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "prepare": "node .husky/install.mjs",

@@ -16,7 +16,7 @@ import type {
 } from "@interfaces/widget"
 import type { Account } from "@interfaces/widget-account"
 import type { ActiveSession } from "@interfaces/widget-session"
-import type { Session } from "sip.js"
+import type { Session, Inviter, Invitation, SessionState } from "sip.js"
 
 /**
  * NOTE: init listeners
@@ -292,15 +292,21 @@ export const stopVoiceDetection = () => {
 }
 
 export const setupRemoteMedia = (session: Session, onVoiceActivity: (value: boolean) => void) => {
-  const remoteStream = getRemoteStream(session)
   const audio = document.getElementById("phone-audio") as HTMLAudioElement
+
   if (audio) {
+    const prevStream = audio.srcObject as MediaStream | null
+    if (prevStream) {
+      prevStream.getTracks().forEach(track => track.stop())
+    }
+
+    const remoteStream = getRemoteStream(session)
     audio.srcObject = remoteStream
     audio.muted = false
     audio.play()
-  }
 
-  startVoiceDetection(remoteStream, onVoiceActivity)
+    startVoiceDetection(remoteStream, onVoiceActivity)
+  }
 }
 
 export const cleanupMedia = () => {
@@ -327,4 +333,48 @@ export const getSessionCallerId = (activeAccount: Account, callerId?: string) =>
   }
 
   return callerId.replace(sessionCallerIdRegExp, "")
+}
+
+export const disposeSession = (
+  session: Inviter | Invitation,
+  stateCallback?: (newState: SessionState) => SessionState
+): void => {
+  if (stateCallback) {
+    try {
+      session.stateChange.removeListener(stateCallback)
+    } catch (e) {
+      console.warn("[WavixWebRTC] Failed to remove stateChange listener", e)
+    }
+  }
+
+  if (session.sessionDescriptionHandler) {
+    try {
+      // @ts-ignore
+      const pc = session.sessionDescriptionHandler.peerConnection as RTCPeerConnection | undefined
+
+      if (pc && pc.signalingState !== "closed") {
+        pc.getSenders().forEach(sender => {
+          if (sender.track) {
+            sender.track.stop()
+          }
+        })
+
+        pc.getReceivers().forEach(receiver => {
+          if (receiver.track) {
+            receiver.track.stop()
+          }
+        })
+
+        pc.close()
+      }
+    } catch (e) {
+      console.warn("[WavixWebRTC] Failed to close peer connection", e)
+    }
+  }
+
+  try {
+    session.dispose()
+  } catch (e) {
+    console.warn("[WavixWebRTC] Failed to dispose session", e)
+  }
 }
