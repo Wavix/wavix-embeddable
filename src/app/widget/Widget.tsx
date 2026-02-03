@@ -265,6 +265,11 @@ export const Widget: FC<Props> = ({ config }) => {
           onDisconnect: error => {
             if (!error) return
 
+            const existingAccount = sipAccounts[account.webrtcToken]
+            if (existingAccount?.ua) {
+              existingAccount.ua.stop().catch(() => {})
+            }
+
             updateSipAccount({
               type: AccountAction.ChangeState,
               webrtcToken: account.webrtcToken,
