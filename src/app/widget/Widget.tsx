@@ -219,7 +219,7 @@ export const Widget: FC<Props> = ({ config }) => {
       })
 
       const ua = new UserAgent({
-        reconnectionAttempts: Infinity,
+        reconnectionAttempts: 0,
         logLevel: "error",
         uri: UserAgent.makeURI(`sip:${account.trunkName}@${account.server}`),
         userAgentString: `WavixWebRTC/${import.meta.env.PACKAGE_VERSION}`,
