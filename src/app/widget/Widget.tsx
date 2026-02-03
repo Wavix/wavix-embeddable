@@ -195,6 +195,22 @@ export const Widget: FC<Props> = ({ config }) => {
 
     if (account.state === AccountState.MultipleSessionDetected || account.state === AccountState.Registered) return
 
+    const existingAccount = sipAccounts[account.webrtcToken]
+    if (existingAccount?.ua) {
+      try {
+        await existingAccount.ua.stop()
+      } catch (e) {
+        console.warn("[WavixWebRTC] Failed to stop existing UA", e)
+      }
+    }
+    if (existingAccount?.registration) {
+      try {
+        existingAccount.registration.dispose()
+      } catch (e) {
+        console.warn("[WavixWebRTC] Failed to dispose existing registration", e)
+      }
+    }
+
     try {
       updateSipAccount({
         type: AccountAction.ChangeState,
